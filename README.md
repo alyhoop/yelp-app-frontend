@@ -1,1 +1,2 @@
-# My Front End for an app that finds brunch
+# Brunch Finder
+An app that finds brunch near you
