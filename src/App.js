@@ -1,55 +1,43 @@
-import React from 'react';
+import React, {
+  useEffect,
+  useState
+} from 'react';
 import './App.css';
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      error: null,
-      isLoaded: false,
-      items: []
-    };
-  }
+function App() {
+  const [error, setError] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [items, setItems] = useState([]);
 
-  componentDidMount() {
-    fetch("http://localhost:9292")
+  useEffect(() => {
+    fetch("https://api.openbrewerydb.org/breweries?by_city=austin")
       .then(res => res.json())
       .then(
         (result) => {
-          this.setState({
-            isLoaded: true,
-            items: result.items
-          });
+          setIsLoaded(true);
+          setItems(result);
         },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
         (error) => {
-          this.setState({
-            isLoaded: true,
-            error
-          });
+          setIsLoaded(true);
+          setError(error);
         }
       )
-  }
+  }, [])
 
-  render() {
-    const { error, isLoaded, items } = this.state;
-    if (error) {
-      return <div>Error: {error.message}</div>;
-    } else if (!isLoaded) {
-      return <div>Loading...</div>;
-    } else {
-      return (
-        <ul>
-          {items.map(item => (
-            <li key={item.name}>
-              {item.name} {item.location}
-            </li>
-          ))}
-        </ul>
-      );
-    }
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  } else if (!isLoaded) {
+    return <div>Loading...</div>;
+  } else {
+    return (
+      <ul>
+        {items.map(item => (
+          <li key={item.name}>
+            {item.name} in {item.city}
+          </li>
+        ))}
+      </ul>
+    );
   }
 }
 
